@@ -1,0 +1,30 @@
+# Tasks
+
+- [ ] **Research Anaslo**
+    - [x] Find Tokushima store List URL on Anaslo. (Result: Found area page but blocked by Cloudflare)
+    - [x] Find specific store URLs (Million, 123). (Result: Found URLs but access is restricted)
+    - [x] Verify HTML structure (can we see BB/RB/Games?). (Result: Blocked by Cloudflare)
+    - [x] Determine URL pattern for specific stores. (Result: Pattern identified but not scrapable)
+- [ ] **Implement Anaslo Direct Links**
+    - [x] Create Store -> URL mapping in `generate_report.py`.
+    - [x] Update `report_template.html` to display "Anaslo" button for supported stores.
+- [x] **Implement Analysis Logic** (Replaced by Direct Links due to anti-scraping)
+    - [x] **Setting Estimation**: specific logic for Juggler (REG prob) and general A-type. (Replaced)
+    - [x] **Implement Historical Data Collection**
+    - [x] Create `src/scrapers/historical_minrepo.py` to scrape pages 1-20.
+    - [x] Save data to `data/history.csv`.
+- [x] **Implement Trend Analysis**
+    - [x] Create `src/analysis/trend_analyzer.py`.
+    - [x] Analyze "Strong Dates" (Avg Diff by day of month).
+    - [x] Analyze "Model Trends" (Keyword frequency per store).
+- [x] **Update Report Generator**
+    - [x] Integrate trend analysis into `generate_report.py`.
+    - [x] Add "Long-term Trends" section to `report_template.html`.
+    - [x] **Tendency Analysis**: Group by Model, verify "End of row" or "Block" bias if possible. (Replaced)
+- [x] **Update Report Generator**
+    - [x] Integrate Anaslo direct links into `generate_report.py`.
+    - [x] Add "Deep Analysis" link support to `report_template.html`.
+- [x] **Verify & Deploy**
+    - [x] Test locally.
+    - [x] Push to GitHub.
+    - [x] Update scraping schedule to Hourly.

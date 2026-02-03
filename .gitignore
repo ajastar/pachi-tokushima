@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.venv
+build/
+dist/
+*.egg-info/
+
+# System
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Generated Reports (uncomment if you want to exclude these)
+# tokushima_pachi_report.html
+
+# Agent Artifacts (Usually good to keep for context, but can be ignored if preferred)
+# task.md
+# implementation_plan.md
+# walkthrough.md
