@@ -1,0 +1,48 @@
+name: Daily Pachinko Scrape
+
+on:
+  push:
+     branches:
+       - main
+  schedule:
+    # Run at 23:00 UTC (8:00 AM JST)
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Scraper
+        run: |
+          python generate_report.py
+        # Ensure the script outputs 'tokushima_pachi_report.html' in the root
+
+      - name: Rename to index.html
+        run: |
+          mv tokushima_pachi_report.html index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          keep_files: false
+          # We only want to publish index.html, but publishing root is easiest for now.
+          # Ideally, move index.html to a 'public' folder and publish that.

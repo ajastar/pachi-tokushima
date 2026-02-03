@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徳島パチ・スロ収集君 ({{ date }})</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            padding-bottom: 60px;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: bold;
+        }
+
+        .store-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .badge-tag {
+            font-size: 0.75rem;
+            margin-right: 4px;
+        }
+
+        .x-btn {
+            color: #1DA1F2;
+            border-color: #1DA1F2;
+        }
+
+        .x-btn:hover {
+            background-color: #1DA1F2;
+            color: white;
+        }
+
+        .trend-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+
+        /* Recommendation Styles */
+        .rec-rank-1 {
+            border: 2px solid #FFd700;
+            background: linear-gradient(to right, #fffdf0, #fff);
+        }
+
+        .rec-rank-1 .rank-icon {
+            color: #FFd700;
+            font-size: 1.5rem;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .btn-group-sm>.btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-3">
+        <header class="text-center mb-4">
+            <h1 class="fw-bold">🎰 徳島パチ・スロ収集君</h1>
+            <p class="text-muted small">{{ date }} 更新</p>
+        </header>
+
+        <!-- Recommendation Section -->
+        {% if recommendations %}
+        <div class="card mb-4 border-warning">
+            <div class="card-header bg-warning text-dark text-center">
+                <i class="fas fa-crown trend-icon"></i>本日の狙い目ホール (AI推奨)
+            </div>
+            <div class="card-body p-2">
+                <div class="list-group list-group-flush">
+                    {% for rec in recommendations %}
+                    <a href="{{ rec.url }}" target="_blank"
+                        class="list-group-item list-group-item-action d-flex align-items-center {% if loop.index == 1 %}rec-rank-1{% endif %}">
+                        <div class="me-3 text-center" style="min-width: 40px;">
+                            {% if loop.index == 1 %}
+                            <i class="fas fa-trophy rank-icon"></i>
+                            {% else %}
+                            <span class="badge bg-secondary rounded-circle fs-6">{{ loop.index }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="mb-1 fw-bold text-dark">{{ rec.name }}</h5>
+                                <div>
+                                    {% for badge in rec.badges %}
+                                    <span class="badge bg-danger">{{ badge }}</span>
+                                    {% endfor %}
+                                    {% if rec.anaslo_url %}
+                                    <a href="{{ rec.anaslo_url }}" target="_blank"
+                                        class="badge bg-dark text-white text-decoration-none">
+                                        <i class="fas fa-chart-bar"></i> 台データ
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="small text-muted">
+                                {% for reason in rec.reasons %}
+                                <span class="text-success"><i class="fas fa-check-circle"></i> {{ reason }}</span><br>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-muted ms-2"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+                <div class="text-center mt-2 small text-muted">※昨日の実績と本日のイベントから独自に算出</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Access -->
+        <div class="row g-2 mb-4">
+            {% for link in external_links %}
+            <div class="col-6 col-md-3">
+                <a href="{{ link.url }}" target="_blank"
+                    class="card h-100 text-center p-3 text-decoration-none border-primary bg-white">
+                    <div class="fw-bold text-primary">{{ link.name }}</div>
+                    <div class="small text-muted" style="font-size: 0.7em;">{{ link.desc }}</div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Trend Board -->
+        {% if trending_machines %}
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <i class="fas fa-chart-line trend-icon"></i>昨日のトレンド機種
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    {% for machine, count in trending_machines %}
+                    <span class="badge bg-light text-dark border p-2">
+                        <span class="fw-bold">{{ machine }}</span>
+                        <span class="badge bg-danger rounded-pill ms-1">{{ count }}店</span>
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- P-World Events (Today) -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-dark text-white">
+                <i class="fas fa-bullhorn trend-icon"></i>本日のイベント / 新台
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for item in today_events %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <a href="{{ item.url }}" target="_blank" class="store-name">{{ item.store_name }}</a>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ item.url }}" target="_blank" class="btn btn-outline-secondary"><i
+                                    class="fas fa-info-circle"></i></a>
+                            <a href="{{ item.x_search_url }}" target="_blank" class="btn btn-outline-info x-btn"><i
+                                    class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                    <div class="mb-1">
+                        {% for tag in item.tags %}
+                        <span class="badge {{ tag.class }} badge-tag">{{ tag.text }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="small text-danger fw-bold">{{ item.event_text }}</div>
+                </li>
+                {% else %}
+                <li class="list-group-item text-center text-muted">本日のイベント情報はありません</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Min-Repo Results (Yesterday) -->
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <i class="fas fa-fire trend-icon"></i>昨日の激アツ結果 (Top Rankings)
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for item in minrepo_data %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                            <a href="{{ item.url }}" target="_blank" class="store-name">{{ item.store_name }}</a>
+                            <div class="small text-muted">{{ item.date }}</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-danger fs-6">+{{ item.total_diff | replace(',', '') | int }}枚</span>
+                            <div class="small text-muted">平均: {{ item.avg_diff }}</div>
+                            {% if item.anaslo_url %}
+                            <a href="{{ item.anaslo_url }}" target="_blank"
+                                class="badge bg-dark text-white text-decoration-none mt-1">
+                                <i class="fas fa-chart-bar"></i> 台データ
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        {% for tag in item.tags %}
+                        <span class="badge {{ tag.class }} badge-tag">{{ tag.text }}</span>
+                        {% endfor %}
+                    </div>
+
+                    {% if item.hot_models %}
+                    <div class="bg-light p-2 rounded small text-secondary">
+                        <i class="fas fa-star text-warning"></i> {{ item.hot_models }}
+                    </div>
+                    {% endif %}
+                </li>
+                {% else %}
+                <li class="list-group-item text-center text-muted">データがありません</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
